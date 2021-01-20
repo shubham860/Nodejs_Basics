@@ -1,66 +1,95 @@
+const Tour = require('../models/tourModels');
 
-// check req.body for add tour middleware
-exports.checkTourBody = (req, res, next) => {
-    if(!req.body.name || !req.body.price){
-        return res.status(404).json({
-            success: false,
-            message: "not found"
-        })
-    }
-    next()
-}
-
-//checkId - param   middleware
-exports.checkId = (req,res,next,val) => {
-    console.log('Tour id is : ' , val, typeof val);
-    // if(val * 1 > tours.length){
-    //     return res.status(404).json({
-    //         success : false,
-    //         message : 'Invalid id'
-    //     })
-    // }
-    next();
-}
 
 //get all tours
-exports.getAllTours = (req,res) => {
-    res.status(200).json({
-        success : true,
-        createdAt: req.createdAt,
-
-    })
+exports.getAllTours = async (req,res) => {
+    try{
+        const tours = await Tour.find();
+        res.status(200).json({
+            success : true,
+            payload: {
+                results: tours,
+                totalCount: tours.length
+            }
+        })
+    }catch (e){
+        res.status(400).json({
+            success: false,
+            message: e
+        })
+    }
 }
 
 // get one tour
-exports.getOneTour = (req,res) => {
-    console.log(req.params);
-    const id = req.params.id * 1;  // if str is multiply by no. it converted in number
-    // const tour = tours.find(el => el.id === id);
-
-    res.status(200).json({
-        success : true,
-        data : {
-            // tour
-        }
-    })
+exports.getOneTour = async (req,res) => {
+   try{
+       const tour = await Tour.findById(req.params.id)
+       // const tour  = await Tour.findOne({_id: req.params.id});
+       res.status(200).json({
+           success : true,
+           payload: tour,
+       })
+   }catch (e){
+       res.status(400).json({
+           success: false,
+           message: e
+       })
+   }
 }
 
 // add one tour
-exports.addOneTour = (req,res) => {
-
+exports.addOneTour = async (req,res) => {
+    try{
+        const newTour = await Tour.create(req.body);
+        res.status(201).json({
+            success: true,
+            payload: newTour
+        })
+    }catch (e){
+        res.status(400).json({
+            success: false,
+            message: 'Invalid request'
+        })
+    }
 }
 
 // update one tour
-exports.updateOneTour = (req,res) => {
-    console.log(req.params);
-    const id = req.params.id * 1;  // if str is multiply by no. it converted in number
+exports.updateOneTour = async (req,res) => {
+    try{
+        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        })
+        res.status(200).json({
+            success: true,
+            payload: {
+                tour
+            }
+        })
+    }catch (e){
+        res.status(400).json({
+            success: false,
+            message: 'Invalid request'
+        })
+    }
 
 }
 
 
 // delete one Tour
-exports.deleteOneTour =  (req,res) => {
-    const id  = req.params.id * 1;
-    console.log(id)
-
+exports.deleteOneTour = async (req,res) => {
+    try{
+        const tour = await Tour.findByIdAndDelete(req.params.id);
+        res.status(200).json({
+            success: true,
+            payload: {
+                tour
+            }
+        })
+    }catch (e){
+        res.status(400).json({
+            success: false,
+            message: 'Invalid request'
+        })
+    }
 }
