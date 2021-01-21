@@ -582,7 +582,7 @@
     ],
     "_id":"5c88fa8cf4afda39709c296c",
     "name":"The Wine Taster",
-    "duration":5,
+      "duration":5,
     "maxGroupSize":8,
     "difficulty":"easy",
     "guides":[
