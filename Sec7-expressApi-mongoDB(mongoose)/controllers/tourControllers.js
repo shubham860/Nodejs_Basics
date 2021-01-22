@@ -112,3 +112,92 @@ exports.deleteOneTour = async (req,res) => {
         })
     }
 }
+
+// get Tour stats using aggregation pipeline ( $match, $group, $sort )
+
+exports.getTourStats = async (req, res) => {
+    try{
+        const tours = await Tour.aggregate([
+            {
+                $match : { price : {$gte : 200} } // give documents have price gte 200
+            },
+            {
+                $group : {
+                    _id : { $toUpper : '$difficulty' },
+                    numTours : { $sum : 1},
+                    numRatings : { $sum : '$ratingsQuantity'},
+                    avgRatings : { $avg : '$ratingsAverage'},
+                    avgPrice : {$avg: '$price'},
+                    minPrice : {$min : '$price'},
+                    maxPrice : {$max : '$price'}
+                }
+            },
+            {
+                $sort : {avgPrice : 1} //  1 for sorting in ascending order
+            }
+        ])
+        res.status(200).json({
+            success : true,
+            payload : {
+                results : tours
+            }
+        })
+    }catch (e){
+        res.status(400).json({
+            success: false,
+            message: e
+        })
+    }
+}
+
+// get monthly stats in a month we need { num Of Tours, names array , month num } of one year
+
+exports.getMonthlyStats = async (req, res) => {
+    try{
+        const year = req.params.year * 1 // Which year
+
+        const tours = await Tour.aggregate([
+            {
+                $unwind : '$startDates' // startDates is an array by unwind we can can each date's document separetly
+            },
+            {
+                $match: {
+                    startDates: {
+                        $gte: new Date(`${year}-01-01`),
+                        $lte: new Date(`${year}-12-31`)
+                    }
+                }
+            },
+            {
+                $group : {
+                    _id : {$month : '$startDates'},
+                    totalTours: {$sum : 1},
+                    tourNames: {$push: '$name'}
+                }
+            },
+            {
+                $addFields : { month: '$_id'}
+            },
+            {
+                $project : { _id : 0}
+            },
+            {
+                $sort : {month : 1}
+            }
+        ])
+
+        res.status(200).json({
+            success : true,
+            payload : {
+                results : tours
+            }
+        })
+    }catch (e){
+        res.status(400).json({
+            success: false,
+            message: e
+        })
+    }
+}
+
+
