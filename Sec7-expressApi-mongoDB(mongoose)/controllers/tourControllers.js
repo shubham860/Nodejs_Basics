@@ -1,5 +1,5 @@
 const Tour = require('../models/tourModels');
-const ApiFeatures = require('./../utils/ApiFeatures');
+const APIFeatures = require("../utils/ApiFeatures");
 
 // Middleware for top 5 cheap tours
 exports.aliasTopTour = (req, res, next) => {
@@ -12,11 +12,11 @@ exports.aliasTopTour = (req, res, next) => {
 // get All tours refactored
 exports.getAllTours = async (req,res) => {
     try{
-        const features = new ApiFeatures(Tour.find(), req.query)
-            .filtering()
-            .sorting()
-            .limitingFields()
-            .pagination()
+        const features = new APIFeatures(Tour.find(), req.query)
+            .filter()
+            .sort()
+            .limitFields()
+            .paginate();
 
         // EXECUTE QUERY
         const tours = await features.query; // we can awit query for documents
