@@ -1,17 +1,21 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 const tourSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'A tour must have a name'],
         unique: true,
-        trim: true
+        trim: true,
+        maxlength: [40, 'A tour name must have length less then equals to 40'],
+        minlength: [5, 'A tour name must have length more then equals to  5'],
+        validator : [validator.isAlpha, 'Tour must contains only numbers']
     },
     slug: String,
     duration: {
         type: Number,
-        required: [true, 'A tour must have a duration']
+        required: [true, 'A tour must have a duration'],
     },
     maxGroupSize: {
         type: Number,
@@ -19,11 +23,17 @@ const tourSchema = new mongoose.Schema({
     },
     difficulty: {
         type: String,
-        required: [true, 'A tour must have a difficulty']
+        required: [true, 'A tour must have a difficulty'],
+        enum: {
+            values: ['difficult','easy','medium'],
+            message: 'A difficulty must includes difficult,easy, medium '
+        }
     },
     ratingsAverage: {
         type: Number,
-        default: 4.5
+        default: 4.5,
+        max: [5, 'ratings must be less then equals to 5'],
+        min: [1, 'ratings must be greater then equals to 1']
     },
     ratingsQuantity: {
         type: Number,
@@ -34,7 +44,13 @@ const tourSchema = new mongoose.Schema({
         required: [true, 'A tour must have a price']
     },
     priceDiscount: {
-        type: Number
+        type: Number,
+        validate : {
+            validator : function (value){
+                return value < this.price
+            }
+        },
+        message : 'price discount ({VALUE}) should be less then price'
     },
     summary: {
         type: String,
@@ -99,10 +115,10 @@ tourSchema.post(/^find/, function (doc,next){
 
 
 // 3(a) Agreegation middleware - pre - run befor any aggregation and this reference to current agggreation document
-tourSchema.pre('aggregate', function (next){
-    this.pipeline().unshift({$match : {secretTour : {$ne : true}}}) // we have to add another match which exclude secret tour true document
-    next()
-})
+    tourSchema.pre('aggregate', function (next){
+        this.pipeline().unshift({$match : {secretTour : {$ne : true}}}) // we have to add another match which exclude secret tour true document
+        next()
+    })
 
 
 

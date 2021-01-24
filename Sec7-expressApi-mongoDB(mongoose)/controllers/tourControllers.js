@@ -67,7 +67,7 @@ exports.addOneTour = async (req,res) => {
     }catch (e){
         res.status(400).json({
             success: false,
-            message: 'Invalid request'
+            message: e
         })
     }
 }
@@ -88,7 +88,7 @@ exports.updateOneTour = async (req,res) => {
     }catch (e){
         res.status(400).json({
             success: false,
-            message: 'Invalid request'
+            message: e
         })
     }
 

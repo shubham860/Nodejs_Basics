@@ -24,4 +24,14 @@ app.use((req,res,next) => {
 app.use('/api/v1/tours',tourRouter);
 app.use('/api/v1/users',userRouter);
 
+// for unhandled routes
+// if any route is not matched then this middleware will run at last to complete req/res cycle
+
+app.all('*',(req,res,next) => {
+    res.status(404).json({
+        success: false,
+        message: `this url ${req.originalUrl} is not on this server`
+    })
+})
+
 module.exports = app;
