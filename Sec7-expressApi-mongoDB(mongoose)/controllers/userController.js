@@ -1,7 +1,17 @@
+const User = require('../models/userModels');
+const CatchAsync = require("../utils/CatchAsync");
+
 // getAllUser
-exports.getAllUsers = (req,res) => {
-    res.status(500).json({success: false, message: "user is not defined yet"});
-}
+exports.getAllUsers = CatchAsync(async (req, res, next) => {
+   const users = await User.find();
+   res.status(200).json({
+        success: true,
+        payload: {
+            users
+        }
+   })
+})
+
 // getOneUser
 exports.getOneUser = (req,res) => {
     res.status(500).json({success: false, message: "user is not defined yet"});

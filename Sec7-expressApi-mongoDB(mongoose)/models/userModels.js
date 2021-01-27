@@ -20,10 +20,17 @@ const userSchema = new mongoose.Schema({
 
     photo : String,
 
+    role: {
+        type: String,
+        enum: ['user', 'lead-guide', 'admin'],
+        default: 'user'
+    },
+
     password: {
         type: String,
         required: [true, 'password is required'],
-        minlength: 8
+        minlength: 8,
+        select: false
     },
 
     passwordConfirm: {
@@ -33,7 +40,9 @@ const userSchema = new mongoose.Schema({
             return el === this.password;
         },
         message: 'passwords are not same!'
-    }
+    },
+
+    passwordChangedAt: Date
 })
 
 // Document middleware for encrypt the password using bcrypt
@@ -47,6 +56,23 @@ userSchema.pre('save', async function(next){
     // delete the passwordConfirm field
     this.passwordConfirm = undefined;
 });
+
+// Instance method for correct password | Instance methods are avilable with the documents
+userSchema.methods.correctPassword = async function( candidatePassword,  userPassword) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Instance method to check password is changed after token is issued
+userSchema.methods.changePasswordAfter = function (jwtTimeStamp){
+    if(this.passwordChangedAt){
+        const changedTimeStamp = parseInt(this.passwordChangedAt.getTime(), 10);
+
+        return jwtTimeStamp < changedTimeStamp;
+    }
+
+    // false means NOT changed
+    return false
+}
 
 const User = mongoose.model('User', userSchema);
 
