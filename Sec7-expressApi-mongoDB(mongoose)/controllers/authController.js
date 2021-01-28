@@ -2,7 +2,9 @@ const {promisify} = require('util');
 const jwt = require('jsonwebtoken');
 const User = require("../models/userModels");
 const CatchAsync = require("../utils/CatchAsync");
+const sendEmail = require("../utils/email");
 const AppError = require("../utils/AppError");
+
 
 const signToken = id => {
     return jwt.sign({id}, process.env.JWT_SECRET_KEY, { expiresIn: process.env.JWT_EXPIRES_IN} )
@@ -107,7 +109,32 @@ exports.forgotPassword = CatchAsync(async (req, res, next) => {
     const resetToken = user.createPasswordResetToken();
     await user.save({ validateBeforeSave: false });
 
+    // send email
 
+    const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/reset-password/${resetToken}`;
+    const message = `Click here ${resetUrl} to reset the password`;
+
+    try{
+        await sendEmail({
+           email: user.email,
+           message,
+           subject: 'Natours reset password (valid for 10 min only)'
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Token send succesfully'
+        })
+    }catch (e){
+        user.createPasswordResetToken = undefined;
+        user.passwordTokenExpiresIn = undefined;
+        await user.save({ validateBeforeSave: false });
+
+        return next(
+            new AppError('There was an error sending the email. Try again later!'),
+            500
+        );
+    }
 })
 
 exports.resetPassword = CatchAsync(async (req, res, next) => {
