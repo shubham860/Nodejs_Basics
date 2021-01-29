@@ -4,6 +4,7 @@ const User = require("../models/userModels");
 const CatchAsync = require("../utils/CatchAsync");
 const sendEmail = require("../utils/email");
 const AppError = require("../utils/AppError");
+const crypto = require('crypto');
 
 
 const signToken = id => {
@@ -138,6 +139,53 @@ exports.forgotPassword = CatchAsync(async (req, res, next) => {
 })
 
 exports.resetPassword = CatchAsync(async (req, res, next) => {
+    // 1) get user based on token
+    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
-    next();
+    const user = await User.findOne({passwordResetToken : hashedToken, passwordTokenExpiresIn: {$gt: Date.now()}});
+
+    // 2) if token is not expired then set the password
+    if(!user){
+        return next(new AppError('Token is invalid or expired',404));
+    }
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetToken = undefined;
+    user.passwordTokenExpiresIn = undefined;
+    await user.save()
+
+    // 3) update the property changedPasswordAt in userModel.js using document middleware
+    // 4) create token and send to the user
+    const token = signToken(user._id);
+
+    res.status(200).json({
+        success: true,
+        token
+    })
 })
+
+exports.updatePassword = CatchAsync(async (req, res, next) => {
+    const {password} = req.body;
+
+   // 1) Get user from collection
+   const user = await User.findById(req.params.id).select("+password");
+   const passwordMatched = await user.correctPassword(password, user.password);
+
+    // 2) Check if 0POSTed current password is correct
+    if(!user || !passwordMatched){
+        return next(new AppError('Invalid password', 401));
+    }
+
+    // 3) If so, update password
+    user.password = password;
+    user.passwordConfirm = password;
+    await user.save();
+
+    // 4) Log user in, send JWT
+    const token = signToken(user._id);
+
+    res.status(200).json({
+        success: true,
+        token
+    })
+});

@@ -60,6 +60,16 @@ userSchema.pre('save', async function(next){
     this.passwordConfirm = undefined;
 });
 
+// Document middleware for update passwordChangedAt during reset Password
+userSchema.pre('save', function (next){
+    if(!this.isModified("password") || this.isNew){
+        return next();
+    }
+
+    this.passwordChangedAt = Date.now() - 1000 // - 1000 is a hack to make time equal so protect route can work properly
+    next();
+})
+
 // Instance method for correct password | Instance methods are avilable with the documents
 userSchema.methods.correctPassword = async function( candidatePassword,  userPassword) {
   return await bcrypt.compare(candidatePassword, userPassword);
