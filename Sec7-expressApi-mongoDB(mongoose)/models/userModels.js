@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
     passwordConfirm: {
         type: String,
         required: [true, 'confirm password is required'],
+        // validate only works for create and save not for update
         validate: function(el) {
             return el === this.password;
         },
@@ -66,7 +67,7 @@ userSchema.pre('save', function (next){
         return next();
     }
 
-    this.passwordChangedAt = Date.now() - 1000 // - 1000 is a hack to make time equal so protect route can work properly
+    this.passwordChangedAt = Date.now() - 1000; // - 1000 is a hack to make time equal so protect route can work properly
     next();
 })
 

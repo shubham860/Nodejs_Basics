@@ -87,7 +87,7 @@ exports.signIn = CatchAsync( async (req,res,next) => {
 
      // Grant access to protected route
      req.user = currentUser;
-       next()
+     next()
  })
 
 // for user roles and permissions - permission middleware | double arrow func means functions returning a function in this case restrictTo returning middleware
@@ -165,11 +165,11 @@ exports.resetPassword = CatchAsync(async (req, res, next) => {
 })
 
 exports.updatePassword = CatchAsync(async (req, res, next) => {
-    const {password} = req.body;
+    const {currentPassword, password, passwordConfirm } = req.body;
 
    // 1) Get user from collection
    const user = await User.findById(req.params.id).select("+password");
-   const passwordMatched = await user.correctPassword(password, user.password);
+   const passwordMatched = await user.correctPassword(currentPassword, user.password);
 
     // 2) Check if 0POSTed current password is correct
     if(!user || !passwordMatched){
@@ -178,7 +178,7 @@ exports.updatePassword = CatchAsync(async (req, res, next) => {
 
     // 3) If so, update password
     user.password = password;
-    user.passwordConfirm = password;
+    user.passwordConfirm = passwordConfirm;
     await user.save();
 
     // 4) Log user in, send JWT
