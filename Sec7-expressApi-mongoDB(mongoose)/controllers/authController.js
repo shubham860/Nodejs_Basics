@@ -162,10 +162,11 @@ exports.resetPassword = CatchAsync(async (req, res, next) => {
         success: true,
         token
     })
-})``
+})
 
 exports.updatePassword = CatchAsync(async (req, res, next) => {
     const {currentPassword, password, passwordConfirm } = req.body;
+
 
     console.log(req.user.id);
 

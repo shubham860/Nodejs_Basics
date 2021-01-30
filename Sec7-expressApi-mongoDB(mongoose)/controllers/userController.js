@@ -39,7 +39,7 @@ exports.updateMe = CatchAsync(async (req, res, next) => {
         payload: {
             user : updatedUser
         }
-    })
+    });
 })
 
 // getOneUser
