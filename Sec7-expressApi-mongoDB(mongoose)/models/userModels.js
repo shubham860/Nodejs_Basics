@@ -46,7 +46,12 @@ const userSchema = new mongoose.Schema({
 
     passwordChangedAt: Date,
     passwordResetToken: String,
-    passwordTokenExpiresIn: Date
+    passwordTokenExpiresIn: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    }
 })
 
 // Document middleware for encrypt the password using bcrypt
@@ -69,6 +74,12 @@ userSchema.pre('save', function (next){
 
     this.passwordChangedAt = Date.now() - 1000; // - 1000 is a hack to make time equal so protect route can work properly
     next();
+})
+
+// QuerY middleware to remove all inactive users from the users list
+userSchema.pre(/^find/, function (next){
+    this.find({active: {$ne: false}});
+    next()
 })
 
 // Instance method for correct password | Instance methods are avilable with the documents

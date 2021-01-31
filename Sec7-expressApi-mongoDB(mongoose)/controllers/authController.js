@@ -12,6 +12,13 @@ const signToken = id => {
 }
 
 
+const createSendToken = (user, status, res) => {
+    const token = signToken(user._id);
+    const cookieOptions = {
+        expires: new Date(Date.now());
+    }
+}
+
 exports.signUp = CatchAsync( async (req, res, next) => {
     const newUser = await User.create({
         name: req.body.name,
@@ -87,7 +94,7 @@ exports.signIn = CatchAsync( async (req,res,next) => {
 
      // Grant access to protected route
      req.user = currentUser;
-     next()
+     next();
  })
 
 // for user roles and permissions - permission middleware | double arrow func means functions returning a function in this case restrictTo returning middleware
