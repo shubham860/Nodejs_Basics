@@ -15,7 +15,7 @@ const signToken = id => {
 const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
     const cookieOptions = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60  * 60 * 1000);
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60  * 60 * 1000),
         httpOnly: true
     }
 
@@ -23,6 +23,7 @@ const createSendToken = (user, statusCode, res) => {
 
     res.cookie('jwt',token,  cookieOptions);
 
+    console.log(res.cookie)
     // Remove password from output
     user.password = undefined;
     res.status(statusCode).json({
@@ -43,15 +44,6 @@ exports.signUp = CatchAsync( async (req, res, next) => {
     });
 
     createSendToken(newUser, 201, res);
-    // const token = signToken(newUser._id);
-    //
-    // res.status(201).json({
-    //     success: true,
-    //     token,
-    //     payload: {
-    //        newUser
-    //     }
-    // });
 })
 
 exports.signIn = CatchAsync( async (req,res,next) => {
