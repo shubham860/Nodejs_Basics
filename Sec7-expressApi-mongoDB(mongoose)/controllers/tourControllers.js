@@ -36,7 +36,9 @@ exports.getAllTours = CatchAsync(async (req,res,next) => {
 // get one tour
 exports.getOneTour = CatchAsync(async (req,res,next) => {
     const tour = await Tour.findById(req.params.id)
+        // .populate({path: "guides", select: "-__v -passwordChangedAt"})
     // const tour  = await Tour.findOne({_id: req.params.id});
+
     if(!tour){
         return next(new AppError('No tour exists with current Id', 404));
     }

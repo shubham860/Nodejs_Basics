@@ -101,7 +101,13 @@ const tourSchema = new mongoose.Schema({
         day: Number
     },
 
-    guides: Array // it contains ids of users as a guide
+    // guides: Array // Embedding - it contains ids of users as a guide
+    guides : [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: "User"
+        }
+    ] // for child refrencing
 },
     {
         toJSON : { virtuals : true },
@@ -125,12 +131,12 @@ tourSchema.post('save',function (doc, next){
     next()
 })
 
-// Document middleware - to get all the user from User model from as a guide by Id.
-tourSchema.pre('save', async function(next){
-    const guidePromise = this.guides.map(async id => User.findById(id)); //  it will return a array of promises to resolve them use promise.all()
-    this.guides = await Promise.all(guidePromise);
-    next()
-})
+// // Document middleware - to get all the user from User model from as a guide by Id.
+// tourSchema.pre('save', async function(next){
+//     const guidePromise = this.guides.map(async id => User.findById(id)); //  it will return a array of promises to resolve them use promise.all()
+//     this.guides = await Promise.all(guidePromise);
+//     next()
+// })
 
 
 //2(a) Query middleware -  pre - runs before query is executed on methos find and all types of find and this keyword reference to current query not document
@@ -140,11 +146,18 @@ tourSchema.pre(/^find/, function (next){
     next()
 })
 
+// Query middleware for child refrencing to populate tour guides data into tours
+tourSchema.pre(/^find/,function (next){
+    this.populate({path: 'guides', select: '-__v -passwordChangedAt' });
+    next();
+})
+
 //2(a) Query middleware -  post - runs after query is executed on methos find and all types of find and this keyword reference to current query not document
 tourSchema.post(/^find/, function (doc,next){
     console.log(`Query took ${Date.now() - this.start} ms`)
     next()
 })
+
 
 
 // 3(a) Agreegation middleware - pre - run befor any aggregation and this reference to current agggreation document
