@@ -18,7 +18,9 @@ mongoose
     })
     .then(() => console.log('mongoDB is connected'))
 
-const Tours = JSON.parse(fs.readFileSync(`${__dirname}/data/tours.json`,'utf-8'));
+const Tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`,'utf-8'));
+
+console.log(Tours);
 
 // IMPORT DATA
 const importData = async () => {

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModels');
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -75,7 +76,32 @@ const tourSchema = new mongoose.Schema({
     secretTour : {
         type: Boolean,
         default: false
-    }
+    },
+
+    startLocations: {
+        type: {
+            type: String,
+            default: "Point",
+            enum: ["Point"],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String
+    },
+
+    locations: {
+        type: {
+            type: String,
+            default: "Point",
+            enum: ["Point"]
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number
+    },
+
+    guides: Array // it contains ids of users as a guide
 },
     {
         toJSON : { virtuals : true },
@@ -96,6 +122,13 @@ tourSchema.pre('save',function (next){
 //1(B) DOCUMENT MIDDLEWARE - post : runs after .save() and .create mongoose methods only it give document after save
 tourSchema.post('save',function (doc, next){
     console.log(doc)
+    next()
+})
+
+// Document middleware - to get all the user from User model from as a guide by Id.
+tourSchema.pre('save', async function(next){
+    const guidePromise = this.guides.map(async id => User.findById(id)); //  it will return a array of promises to resolve them use promise.all()
+    this.guides = await Promise.all(guidePromise);
     next()
 })
 
