@@ -148,7 +148,8 @@ tourSchema.pre(/^find/, function (next){
 
 // Query middleware for child refrencing to populate tour guides data into tours
 tourSchema.pre(/^find/,function (next){
-    this.populate({path: 'guides', select: '-__v -passwordChangedAt' });
+    console.log("running")
+    this.populate('guides');
     next();
 })
 
