@@ -8,6 +8,8 @@ const hpp = require('hpp');
 
 const tourRouter = require('./routes/tourRouter');
 const userRouter = require('./routes/userRouter');
+const reviewRouter = require('./routes/reviewRouter');
+
 const AppError = require('./utils/AppError');
 const globalErrorController = require('./controllers/globalErrorController');
 
@@ -57,6 +59,7 @@ app.use((req,res,next) => {
 // ROUTES
 app.use('/api/v1/tours',tourRouter);
 app.use('/api/v1/users',userRouter);
+app.use('/api/v1/reviews',reviewRouter);
 
 // for unhandled routes
 // if any route is not matched then this middleware will run at last to complete req/res cycle

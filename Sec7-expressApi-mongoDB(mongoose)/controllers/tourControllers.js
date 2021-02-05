@@ -21,6 +21,7 @@ exports.getAllTours = CatchAsync(async (req,res,next) => {
 
     // EXECUTE QUERY
     const tours = await features.query; // we can awit query for documents
+    console.log('tours',tours.length)
 
     //Send response
     res.status(200).json({

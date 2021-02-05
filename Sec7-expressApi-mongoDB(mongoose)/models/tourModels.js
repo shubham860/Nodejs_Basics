@@ -141,15 +141,15 @@ tourSchema.post('save',function (doc, next){
 
 //2(a) Query middleware -  pre - runs before query is executed on methos find and all types of find and this keyword reference to current query not document
 tourSchema.pre(/^find/, function (next){
-    this.find({secretTour : {$ne : true}}) // .find is method on query
+    // this.find({secretTour : {$ne : false}}) // .find is method on query
     this.start = Date.now();
     next()
 })
 
 // Query middleware for child refrencing to populate tour guides data into tours
 tourSchema.pre(/^find/,function (next){
-    console.log("running")
-    this.populate('guides');
+    console.log("i'm running")
+    this.populate({path: 'guides', select: '-__v -passwordChangedAt'}); //  this.populate('guides');
     next();
 })
 
