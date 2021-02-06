@@ -40,6 +40,12 @@ const reviewSchema  = new mongoose.Schema({
     })
 
 
+// query middleware for populating the tour and user in review
+reviewSchema.pre(/^find/, function (next){
+    this.populate({path: "user", select: "-__v -passwordChangedAt"});
+    next();
+})
+
 const Review = mongoose.model('review', reviewSchema);
 
 module.exports = Review;

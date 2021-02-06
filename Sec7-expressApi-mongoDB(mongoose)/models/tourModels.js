@@ -119,7 +119,14 @@ tourSchema.virtual('durationWeeks').get(function (){
     return this.duration / 7 ;
 })
 
-//1(A) DOCUMENT MIDDLEWARE - pre : runs before .save() and .create mongoose methods only it has access to currently processing document
+// VIRTUAL POPULATE - for showing review of particular tour
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour',
+    localField: '_id'
+})
+
+//1(A) DOCUMENT MIDDLEWARE - pre : ru   ns before .save() and .create mongoose methods only it has access to currently processing document
 tourSchema.pre('save',function (next){
   this.slug  = slugify(this.name, {lower: true})
     next()
