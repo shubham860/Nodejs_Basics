@@ -13,6 +13,7 @@ const tourSchema = new mongoose.Schema({
         minlength: [5, 'A tour name must have length more then equals to  5'],
         validator : [validator.isAlpha, 'Tour must contains only numbers']
     },
+
     slug: String,
     duration: {
         type: Number,
@@ -124,9 +125,9 @@ tourSchema.virtual('reviews', {
     ref: 'Review',
     foreignField: 'tour',
     localField: '_id'
-})
+});
 
-//1(A) DOCUMENT MIDDLEWARE - pre : ru   ns before .save() and .create mongoose methods only it has access to currently processing document
+//1(A) DOCUMENT MIDDLEWARE - pre : runs before .save() and .create mongoose methods only it has access to currently processing document
 tourSchema.pre('save',function (next){
   this.slug  = slugify(this.name, {lower: true})
     next()
@@ -172,7 +173,7 @@ tourSchema.post(/^find/, function (doc,next){
     tourSchema.pre('aggregate', function (next){
         this.pipeline().unshift({$match : {secretTour : {$ne : true}}}) // we have to add another match which exclude secret tour true document
         next()
-    })
+ })
 
 
 
