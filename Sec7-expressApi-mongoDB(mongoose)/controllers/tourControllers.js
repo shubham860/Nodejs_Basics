@@ -2,6 +2,7 @@ const Tour = require('../models/tourModels');
 const APIFeatures = require("../utils/ApiFeatures");
 const CatchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/AppError");
+const factory = require("./factoryFunction");
 
 // Middleware for top 5 cheap tours
 exports.aliasTopTour = (req, res, next) => {
@@ -62,42 +63,50 @@ exports.addOneTour = CatchAsync(async (req,res, next) => {
     })
 })
 
-// update one tour
-exports.updateOneTour = CatchAsync(async (req,res, next) => {
-        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        })
+// update one tour - starts
+exports.updateOneTour = factory.updateOne(Tour);
+// exports.updateOneTour = CatchAsync(async (req,res, next) => {
+//         const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//             new: true,
+//             runValidators: true
+//         })
+//
+//         if(!tour){
+//             return next(new AppError('No tour exists with current Id', 404));
+//         }
+//
+//         res.status(200).json({
+//             success: true,
+//             payload: {
+//                 tour
+//             }
+//         })
+//     }
+// )
 
-        if(!tour){
-            return next(new AppError('No tour exists with current Id', 404));
-        }
+// update one tour - ends
 
-        res.status(200).json({
-            success: true,
-            payload: {
-                tour
-            }
-        })
-    }
-)
+// delete one Tour starts
 
-// delete one Tour
-exports.deleteOneTour = CatchAsync(async (req, res, next) => {
-    const tour = await Tour.findByIdAndDelete(req.params.id);
+exports.deleteOneTour = factory.deleteOne(Tour);
 
-    if(!tour){
-        return next(new AppError('No tour exists with current Id', 404));
-    }
+// exports.deleteOneTour = CatchAsync(async (req, res, next) => {
+//     const tour = await Tour.findByIdAndDelete(req.params.id);
+//
+//     if(!tour){
+//         return next(new AppError('No tour exists with current Id', 404));
+//     }
+//
+//     res.status(200).json({
+//         success: true,
+//         payload: {
+//             tour
+//         }
+//     })
+//
+// })
 
-    res.status(200).json({
-        success: true,
-        payload: {
-            tour
-        }
-    })
-
-})
+// delete End
 
 // get Tour stats using aggregation pipeline ( $match, $group, $sort )
 

@@ -1,6 +1,7 @@
 const User = require('../models/userModels');
 const CatchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/AppError");
+const factory = require("./factoryFunction");
 
 const filterObj = (obj, ...fields) => {
     const newObj = {};
@@ -63,7 +64,10 @@ exports.updateOneUser = (req,res) => {
 exports.addOneUser = (req,res) => {
     res.status(500).json({success: false, message: "user is not defined yet"});
 }
-// deleteOneUser
-exports.deleteOneUser = (req,res) => {
-    res.status(500).json({success: false, message: "user is not defined yet"});
-}
+// deleteOneUser start
+exports.deleteOneUser = factory.deleteOne(User);
+
+// exports.deleteOneUser = (req,res) => {
+//     res.status(500).json({success: false, message: "user is not defined yet"});
+// }
+// deleteOneUser end

@@ -26,7 +26,7 @@ const reviewSchema  = new mongoose.Schema({
 
     user: {
             type: mongoose.Schema.ObjectId,
-            ref: "User",
+            ref: 'User',
             required: [true, 'review must belong to user']
         }
 },
@@ -38,7 +38,7 @@ const reviewSchema  = new mongoose.Schema({
 
 // query middleware for populating the tour and user in review
 reviewSchema.pre(/^find/, function (next){
-    this.populate({path: "user", select: "-__v -passwordChangedAt"});
+    this.populate({path: "tour user", select: "-__v -passwordChangedAt"});
     next();
 })
 

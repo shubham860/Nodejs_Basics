@@ -1,9 +1,14 @@
 const Review = require('../models/reviewModal');
 const CatchAsync = require('../utils/CatchAsync');
 const AppError = require('../utils/AppError');
+const factory = require("./factoryFunction");
 
 exports.getAllReviews = CatchAsync(async (req, res, next) => {
-    const review = await Review.find();
+    let filter = {} // filter object is in case of nested route of GET /:tourid/reviews
+
+    if(req.params.tourId) filter = {tour: req.params.tourId};
+
+    const review = await Review.find(filter);
 
     if(!review){
         next(new AppError('No review found', 404))
@@ -38,9 +43,11 @@ exports.addOneReview = CatchAsync(async (req, res, next) => {
     if( !req.body.tour ) req.body.tour = req.params.tourId;
     if( !req.body.user ) req.body.user = req.user.id;
 
-    console.log('req.body', req.body)
+    // console.log('req.body', req.body)
 
     const review = await Review.create(req.body);
+
+    console.log('review',review)
 
     if(!review){
         next(new AppError('review is not created', 404))
@@ -53,3 +60,11 @@ exports.addOneReview = CatchAsync(async (req, res, next) => {
         }
     })
 })
+
+// update one review
+exports.updateOneReview = factory.updateOne(Review);
+
+
+// delete one review
+exports.deleteOneReview = factory.deleteOne(Review);
+
