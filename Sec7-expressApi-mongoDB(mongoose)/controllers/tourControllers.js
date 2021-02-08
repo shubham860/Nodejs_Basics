@@ -50,18 +50,22 @@ exports.getOneTour = CatchAsync(async (req,res,next) => {
     })
 })
 
-// add one tour
-exports.addOneTour = CatchAsync(async (req,res, next) => {
-    const newTour = await Tour.create(req.body);
-    if(! newTour){
-        return next(new AppError('Tour is not created', 404));
-    }
+// add one tour - starts
+exports.addOneTour = factory.createOne(Tour);
 
-    res.status(201).json({
-        success: true,
-        payload: newTour
-    })
-})
+// exports.addOneTour = CatchAsync(async (req,res, next) => {
+//     const newTour = await Tour.create(req.body);
+//     if(! newTour){
+//         return next(new AppError('Tour is not created', 404));
+//     }
+//
+//     res.status(201).json({
+//         success: true,
+//         payload: newTour
+//     })
+// })
+
+// add one tour - ends
 
 // update one tour - starts
 exports.updateOneTour = factory.updateOne(Tour);

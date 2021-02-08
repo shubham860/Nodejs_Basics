@@ -18,6 +18,7 @@ exports.deleteOne = model => CatchAsync(async (req, res, next) => {
 
 })
 
+// update one document
 exports.updateOne = model => CatchAsync(async (req,res, next) => {
         const doc = await model.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -36,3 +37,17 @@ exports.updateOne = model => CatchAsync(async (req,res, next) => {
         })
     }
 )
+
+
+// create one document
+exports.createOne = model => CatchAsync(async (req,res, next) => {
+    const doc = await model.create(req.body);
+    if(! doc){
+        return next(new AppError('Doc is not created', 404));
+    }
+
+    res.status(201).json({
+        success: true,
+        payload: doc
+    })
+})

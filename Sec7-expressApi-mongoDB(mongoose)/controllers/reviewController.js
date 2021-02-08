@@ -38,28 +38,42 @@ exports.getOneReview = CatchAsync(async (req,res,next) => {
     })
 })
 
-exports.addOneReview = CatchAsync(async (req, res, next) => {
+exports.setTourIds = (req, res, next) => {
     // NESTED Routes
     if( !req.body.tour ) req.body.tour = req.params.tourId;
     if( !req.body.user ) req.body.user = req.user.id;
+    next();
+}
 
-    // console.log('req.body', req.body)
 
-    const review = await Review.create(req.body);
+// Add review - starts
+exports.addOneReview = factory.createOne(Review);
 
-    console.log('review',review)
+//     exports.addOneReview = CatchAsync(async (req, res, next) => {
+//     // NESTED Routes
+//     if( !req.body.tour ) req.body.tour = req.params.tourId;
+//     if( !req.body.user ) req.body.user = req.user.id;
+//
+//     // console.log('req.body', req.body)
+//
+//     const review = await Review.create(req.body);
+//
+//     console.log('review',review)
+//
+//     if(!review){
+//         next(new AppError('review is not created', 404))
+//     }
+//
+//     res.status(201).json({
+//         success: true,
+//         payload:{
+//             review,
+//         }
+//     })
+// })
 
-    if(!review){
-        next(new AppError('review is not created', 404))
-    }
 
-    res.status(201).json({
-        success: true,
-        payload:{
-            review,
-        }
-    })
-})
+// Add review - ends
 
 // update one review
 exports.updateOneReview = factory.updateOne(Review);
