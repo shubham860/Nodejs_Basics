@@ -1,5 +1,5 @@
 const Tour = require('../models/tourModels');
-const APIFeatures = require("../utils/ApiFeatures");
+// const APIFeatures = require("../utils/ApiFeatures");
 const CatchAsync = require("../utils/CatchAsync");
 const AppError = require("../utils/AppError");
 const factory = require("./factoryFunction");
@@ -12,43 +12,51 @@ exports.aliasTopTour = (req, res, next) => {
 }
 
 
-// get All tours refactored
-exports.getAllTours = CatchAsync(async (req,res,next) => {
-    const features = new APIFeatures(Tour.find(), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
+// get All tours refactored - starts
 
-    // EXECUTE QUERY
-    const tours = await features.query; // we can awit query for documents
-    console.log('tours',tours.length)
+exports.getAllTours = factory.getAll(Tour);
+// exports.getAllTours = CatchAsync(async (req,res,next) => {
+//     const features = new APIFeatures(Tour.find(), req.query)
+//         .filter()
+//         .sort()
+//         .limitFields()
+//         .paginate();
+//
+//     // EXECUTE QUERY
+//     const tours = await features.query; // we can awit query for documents
+//     console.log('tours',tours.length)
+//
+//     //Send response
+//     res.status(200).json({
+//         success : true,
+//         payload: {
+//             results: tours,
+//             totalCount: tours.length
+//         }
+//     })
+// })
 
-    //Send response
-    res.status(200).json({
-        success : true,
-        payload: {
-            results: tours,
-            totalCount: tours.length
-        }
-    })
-})
+// get All tours refactored - ends
 
+// get one tour - starts
 
-// get one tour
-exports.getOneTour = CatchAsync(async (req,res,next) => {
-    const tour = await Tour.findById(req.params.id)
-        // .populate({path: "guides", select: "-__v -passwordChangedAt"})
-    // const tour  = await Tour.findOne({_id: req.params.id});
+exports.getOneTour = factory.getOne(Tour);
 
-    if(!tour){
-        return next(new AppError('No tour exists with current Id', 404));
-    }
-    res.status(200).json({
-        success : true,
-        payload: tour,
-    })
-})
+// exports.getOneTour = CatchAsync(async (req,res,next) => {
+//     const tour = await Tour.findById(req.params.id)
+//         // .populate({path: "guides", select: "-__v -passwordChangedAt"})
+//     // const tour  = await Tour.findOne({_id: req.params.id});
+//
+//     if(!tour){
+//         return next(new AppError('No tour exists with current Id', 404));
+//     }
+//     res.status(200).json({
+//         success : true,
+//         payload: tour,
+//     })
+// })
+
+// get one tour - starts
 
 // add one tour - starts
 exports.addOneTour = factory.createOne(Tour);

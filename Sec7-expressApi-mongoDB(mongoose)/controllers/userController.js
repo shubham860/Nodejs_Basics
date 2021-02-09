@@ -12,15 +12,20 @@ const filterObj = (obj, ...fields) => {
 }
 
 // getAllUser
-exports.getAllUsers = CatchAsync(async (req, res, next) => {
-   const users = await User.find();
-   res.status(200).json({
-        success: true,
-        payload: {
-            users
-        }
-   })
-})
+exports.getAllUsers = factory.getAll(User);
+
+// exports.getAllUsers = CatchAsync(async (req, res, next) => {
+//    const users = await User.find();
+//    res.status(200).json({
+//         success: true,
+//         payload: {
+//             users
+//         }
+//    })
+// })
+
+// get All users ends
+
 
 exports.updateMe = CatchAsync(async (req, res, next) => {
     // 1) cannot post any password fields
@@ -52,10 +57,21 @@ exports.deleteMe = CatchAsync(async (req, res, next) => {
     });
 })
 
-// getOneUser
-exports.getOneUser = (req,res) => {
-    res.status(500).json({success: false, message: "user is not defined yet"});
+
+// get me starts
+exports.getMe = (req, res, next) => {
+    req.params.id = req.user.id;
+    next();
 }
+// get me ends
+
+// getOneUser starts
+exports.getOneUser = factory.getOne(User);
+// exports.getOneUser = (req,res) => {
+//     res.status(500).json({success: false, message: "user is not defined yet"});
+// }
+// getOneUser ends
+
 // updateOneUser
 exports.updateOneUser = (req,res) => {
     res.status(500).json({success: false, message: "user is not defined yet"});

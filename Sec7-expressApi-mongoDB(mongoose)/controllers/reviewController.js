@@ -3,25 +3,29 @@ const CatchAsync = require('../utils/CatchAsync');
 const AppError = require('../utils/AppError');
 const factory = require("./factoryFunction");
 
-exports.getAllReviews = CatchAsync(async (req, res, next) => {
-    let filter = {} // filter object is in case of nested route of GET /:tourid/reviews
+// get all reviews starts
+exports.getAllReviews = factory.getAll(Review);
 
-    if(req.params.tourId) filter = {tour: req.params.tourId};
-
-    const review = await Review.find(filter);
-
-    if(!review){
-        next(new AppError('No review found', 404))
-    }
-
-    res.status(200).json({
-        success: true,
-        payload:{
-            reviews: review,
-            totalCount: review.length
-        }
-    })
-})
+// exports.getAllReviews = CatchAsync(async (req, res, next) => {
+//     let filter = {} // filter object is in case of nested route of GET /:tourid/reviews
+//
+//     if(req.params.tourId) filter = {tour: req.params.tourId};
+//
+//     const review = await Review.find(filter);
+//
+//     if(!review){
+//         next(new AppError('No review found', 404))
+//     }
+//
+//     res.status(200).json({
+//         success: true,
+//         payload:{
+//             reviews: review,
+//             totalCount: review.length
+//         }
+//     })
+// })
+// getAll review Ends
 
 // get one tour
 exports.getOneReview = CatchAsync(async (req,res,next) => {
@@ -81,4 +85,7 @@ exports.updateOneReview = factory.updateOne(Review);
 
 // delete one review
 exports.deleteOneReview = factory.deleteOne(Review);
+
+// get one review
+exports.getOneReview = factory.getOne(Review);
 

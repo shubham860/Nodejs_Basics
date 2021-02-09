@@ -22,8 +22,8 @@ router
 
 router
     .route('/')
-    .get(protect, getAllTours)
-    .post(addOneTour);
+    .get(getAllTours)
+    .post(protect,restrictTo('admin','guide'), addOneTour);
 
 router
     .route('/:id')
