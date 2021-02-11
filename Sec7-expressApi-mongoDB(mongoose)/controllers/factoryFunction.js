@@ -76,7 +76,6 @@ exports.getAll = modal => CatchAsync(async (req,res,next) => {
     let filter = {} // filter object is in case of nested route of GET /:tourid/reviews
     if(req.params.tourId) filter = {tour: req.params.tourId};
 
-
     const features = new APIFeatures(modal.find(filter), req.query)
         .filter()
         .sort()

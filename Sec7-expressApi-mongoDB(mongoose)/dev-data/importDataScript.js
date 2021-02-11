@@ -40,7 +40,6 @@ const importData = async () => {
     process.exit();
 }
 
-
 // DELETE DATA
 const deleteData = async () => {
     try{
