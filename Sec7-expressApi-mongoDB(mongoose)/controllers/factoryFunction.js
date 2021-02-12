@@ -84,7 +84,7 @@ exports.getAll = modal => CatchAsync(async (req,res,next) => {
 
     // EXECUTE QUERY
     const doc = await features.query; // we can awit query for documents
-
+                    // .explain() for checking reading stats for indexing
     //Send response
     res.status(200).json({
         success : true,

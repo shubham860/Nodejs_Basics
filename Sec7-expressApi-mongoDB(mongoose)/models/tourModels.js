@@ -116,6 +116,12 @@ const tourSchema = new mongoose.Schema({
     }
 )
 
+// for improving reading performance we use indexing because n mongo ids is stored uniquely
+tourSchema.index({price: 1, ratingsAverage: -1}); // 1,-1 for ascending , descending respectively
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
+
 tourSchema.virtual('durationWeeks').get(function (){
     return this.duration / 7 ;
 })
