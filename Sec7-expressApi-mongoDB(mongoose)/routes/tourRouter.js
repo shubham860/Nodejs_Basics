@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllTours, addOneTour, getOneTour, updateOneTour, deleteOneTour, aliasTopTour, getTourStats, getMonthlyStats} = require('../controllers/tourControllers');
+const { getAllTours, addOneTour, getOneTour, updateOneTour, deleteOneTour, aliasTopTour, getTourStats, getMonthlyStats, getToursWithin} = require('../controllers/tourControllers');
 const { protect, restrictTo }  = require('../controllers/authController');
 const reviewRouter = require('./reviewRouter');
 
@@ -7,6 +7,15 @@ const router = express.Router();
 
 // NESTED router
 router.use('/:tourId/reviews', reviewRouter);
+
+
+// Geospatial queries :-
+// Finding tours within radius
+router
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(getToursWithin)
+
+// Ends geospatial queries
 
 router
     .route('/tour-monthly-stats/:year')

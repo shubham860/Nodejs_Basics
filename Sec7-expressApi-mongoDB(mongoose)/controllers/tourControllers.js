@@ -194,3 +194,30 @@ exports.getMonthlyStats = CatchAsync(async (req, res, next) => {
     }
 
 )
+
+// Geospatial controller - get tours within a radius
+// /tours-within/:distance/center/:latlng/unit/:unit
+// /tours-within/233/center/34.111745,-118.113491/unit/mi
+
+exports.getToursWithin = CatchAsync(async (req, res, next) => {
+    const {distance, latlng, unit} = req.params;
+    const [lat, lng] = latlng.split(',');
+    const radius = unit === 'mi' ? distance / 3962.2 : distance / 6378.1;
+
+    if(!lat || !lng){
+        next(new AppError('Please provide latitute and longitude in the format lat,lng.',
+            400))
+    }
+
+    const tours = await Tour.find({
+        startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+    })
+
+    res.status(200).json({
+        success: true,
+        data: {
+            tours,
+            totalCount: tours.length
+        }
+    })
+})
